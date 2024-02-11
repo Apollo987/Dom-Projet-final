@@ -81,9 +81,15 @@ function game() {
       countGuess += 1;
     } else if (submitNumber > 500 || submitNumber < 0) {
       hintbox.innerText = " Le numéro doit être compris entre 0 et 500 !";
+      document.getElementById("yourGuessInput").value = "";
+      countGuess += 1;
     } else if (submitNumber === randomNumber) {
       hintbox.innerText = "Good Job ! Number was : " + randomNumber;
       playAgainButton.style.visibility = "visible";
+    } else if (isNaN(submitNumber)) {
+      hintbox.innerText = "Vous devez entrer un nombre !";
+      document.getElementById("yourGuessInput").value = "";
+      countGuess += 1;
     }
     console.log(countGuess);
     guessCountElement.textContent = countGuess;
