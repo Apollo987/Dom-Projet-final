@@ -12,6 +12,9 @@ let randomNumber = Math.floor(Math.random() * 500);
 let countGuess = 0;
 
 function playAgain() {
+  countGuess = 0;
+  guessCountElement.textContent = countGuess;
+  console.log(`count= ${countGuess}`);
   document.getElementById("yourGuessInput").value = "";
   playAgainButton.style.visibility = "hidden";
   randomNumber = Math.floor(Math.random() * 500);
@@ -21,7 +24,6 @@ function playAgain() {
     const ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
   }
-  // countGuess = 0;
 
   game();
 }
@@ -54,7 +56,6 @@ function drawX(wrongNumber) {
 function game() {
   // let randomNumber = Math.floor(Math.random() * 500);
   console.log(randomNumber);
-  countGuess = 0;
 
   submitButton.addEventListener("click", (event) => {
     let yourGuess = document.getElementById("yourGuessInput").value;
@@ -95,8 +96,8 @@ function game() {
       document.getElementById("yourGuessInput").value = "";
       countGuess += 1;
     }
-    console.log(countGuess);
     guessCountElement.textContent = countGuess;
+    console.log(countGuess);
   });
 }
 
