@@ -1,100 +1,54 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
   <head>
     <meta charset="UTF-8" />
-    <!-- <link rel="icon" type="image/svg+xml" href="/vite.svg" /> -->
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Protest+Strike&display=swap"
-      rel="stylesheet"
-    />
-    <title>Guess the number !</title>
+    <title>Vite App</title>
   </head>
-  <body class="bg-slate-800 relative">
-    <div id="titleContainer" class="m-6">
+  <body class="h-full">
+    <div class="container m-auto mt-4 h-full flex flex-col">
       <h1
-        class="text-cyan-600 font-Protest-Strike uppercase text-7xl text-center"
+        class="text-center font-extrabold text-6xl"
+        style="font-family: Raleway"
       >
-        Guess the number !
+        GUESS THE NUMBER
       </h1>
-    </div>
-    <div
-      id="startContainer"
-      class="z-10 w-1/2 max-w-md h-40 m-auto mt-32 font-Protest-Strike fonts text-xl text-white"
-    >
-      <!-- set to relative -->
-
-      <div>
-        <p>
-          The application will generate a random number, and your task is to
-          find it in as few attempts as possible.
-        </p>
-        <div class="w-24 h-20 flex justify-center">
-          <button
-            id="startButton"
-            class="w-20 h-8 bg-cyan-600 rounded-md mt-6 hover:bg-slate-100 hover:text-cyan-600 hover:scale-110 transform transition duration-500"
-          >
-            Start !
-          </button>
+      <div class="h-full flex items-center justify-center">
+        <div
+          id="start-container"
+          class="flex flex-col gap-4 items-start max-w-md"
+        >
+          <p>
+            The application will generate a random number, and your task is to
+            find it in as few attempts as possible.
+          </p>
+          <button id="start">Start</button>
         </div>
-      </div>
-    </div>
-    <div
-      id="gameContainer"
-      style="width: 500px"
-      class="m-auto relative mb-6 -top-44 left[200] z-0 font-Protest-Strike fonts text-xl text-white"
-    >
-      <h2 class="text-xl text-center p-4">
-        Find the number between 0 and 500 !
-      </h2>
-      <div id="scoreBox" class="flex justify-end">
-        <div class="text-base w-12">Tries :</div>
-        <div id="guessCount" class="text-base">0</div>
-      </div>
-      <form id="gameForm" class="">
-        <div id="guessBox" class="h-24">
-          <label for="yourGuess" class="m-3">Your Guess</label>
-          <div class="flex items-center mt-2">
-            <input
-              type="text"
-              class="input text-cyan-600 text-lg bg-slate-800"
-              id="yourGuessInput"
-              name="yourGuessInput"
-            />
-            <button
-              id="submitButton"
-              type="submit"
-              class="w-28 h-10 bg-cyan-600 ml-4 mr-2 rounded-md hover:bg-slate-100 hover:text-cyan-600 transform transition duration-500"
-            >
-              Submit
-            </button>
+        <div id="game-container" class="flex flex-col gap-4 max-w-md hidden">
+          <p>I generated a number between 0 and 500, try to find it 😆</p>
+          <p class="text-end" id="attempt">Attemp(s) : 0</p>
+          <div class="flex flex-col gap-0.5">
+            <label for="guess">Your guess</label>
+            <form id="guess-form" class="flex items-center gap-1">
+              <input name="guess" />
+              <button>Submit</button>
+            </form>
+            <p class="text-xs text-neutral-500">Enter your guessing number</p>
           </div>
+          <p id="message"></p>
+          <div class="flex flex-col gap-0.5">
+            <div
+              id="attemps"
+              class="w-full h-10 border border-neutral-400 rounded-md relative"
+            ></div>
+            <div class="flex justify-between">
+              <p class="text-xs">0</p>
+              <p class="text-xs">500</p>
+            </div>
+          </div>
+          <button id="restart" class="hidden">Restart</button>
         </div>
-        <p id="hintBox" class="text-center h-8"></p>
-        <canvas
-          width="500px"
-          height="40px"
-          id="canvas"
-          style="border: 1px solid black"
-          class="rounded-md"
-        >
-        </canvas>
-      </form>
-      <div class="flex">
-        <div class="w-1/2"><p>0</p></div>
-        <div class="w-1/2 text-right"><p>500</p></div>
-      </div>
-      <div class="flex">
-        <button
-          id="playAgainButton"
-          type="submit"
-          style="visibility: hidden"
-          class="w-28 h-10 bg-cyan-600 m-auto mt-2 rounded-md hover:bg-slate-100 hover:text-cyan-600 transform transition duration-500"
-        >
-          Play again
-        </button>
       </div>
     </div>
     <script type="module" src="/main.js"></script>

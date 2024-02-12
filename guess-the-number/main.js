@@ -1,108 +1,149 @@
 import "./style.css";
 
-const startButton = document.querySelector("#startButton");
-const startContainer = document.querySelector("#startContainer");
-const gameContainer = document.querySelector("#gameContainer");
-const guessCountElement = document.querySelector("#guessCount");
-const playAgainButton = document.querySelector("#playAgainButton");
-const submitButton = document.querySelector("#submitButton");
+// Game
+// -> créer la partie
+// -> destroy
 
-let submitNumber;
-let randomNumber = Math.floor(Math.random() * 500);
-let countGuess = 0;
+// Recréer un game
 
-function playAgain() {
-  countGuess = 0;
-  guessCountElement.textContent = countGuess;
-  console.log(`count= ${countGuess}`);
-  document.getElementById("yourGuessInput").value = "";
-  playAgainButton.style.visibility = "hidden";
-  randomNumber = Math.floor(Math.random() * 500);
+// AttempGauge
 
-  const canvas = document.getElementById("canvas");
-  if (canvas.getContext) {
-    const ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+const getRandomNumber = (min, max) => {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+
+const MAX = 500;
+
+class Attempts {
+  constructor() {
+    this.attempts = [];
   }
 
-  game();
-}
+  init() {
+    this.element = document.querySelector("#attemps");
 
-startButton.addEventListener("click", (event) => {
-  startContainer.style.transform = `translateX(${3000}px)`;
-  startContainer.style.transition = `transform 5s ease-out`;
-  gameContainer.style.transform = `translateX(${1500}px)`;
-  gameContainer.style.transition = `transform 4s ease-out`;
-});
-
-function drawX(wrongNumber) {
-  const canvas = document.getElementById("canvas");
-  if (canvas.getContext) {
-    const ctx = canvas.getContext("2d");
-
-    ctx.beginPath();
-
-    ctx.moveTo(wrongNumber - 10, 10);
-    ctx.lineTo(wrongNumber + 10, 30);
-    ctx.moveTo(wrongNumber + 10, 10);
-    ctx.lineTo(wrongNumber - 10, 30);
-    ctx.closePath();
-
-    ctx.strokeStyle = "#0891b2";
-    ctx.stroke();
-  }
-}
-
-function game() {
-  // let randomNumber = Math.floor(Math.random() * 500);
-  console.log(randomNumber);
-
-  submitButton.addEventListener("click", (event) => {
-    let yourGuess = document.getElementById("yourGuessInput").value;
-    submitNumber = parseInt(yourGuess, 10);
-    const hintbox = document.querySelector("#hintBox");
-    event.preventDefault();
-    if (
-      submitNumber !== randomNumber &&
-      submitNumber <= 500 &&
-      submitNumber >= 0 &&
-      submitNumber < randomNumber
-    ) {
-      let wrongNumber = submitNumber;
-      hintbox.innerText = "Le numéro est plus grand !";
-      drawX(wrongNumber);
-      document.getElementById("yourGuessInput").value = "";
-      countGuess += 1;
-    } else if (
-      submitNumber !== randomNumber &&
-      submitNumber <= 500 &&
-      submitNumber >= 0 &&
-      submitNumber > randomNumber
-    ) {
-      let wrongNumber = submitNumber;
-      hintbox.innerText = "Le numéro est plus petit !";
-      drawX(wrongNumber);
-      document.getElementById("yourGuessInput").value = "";
-      countGuess += 1;
-    } else if (submitNumber > 500 || submitNumber < 0) {
-      hintbox.innerText = " Le numéro doit être compris entre 0 et 500 !";
-      document.getElementById("yourGuessInput").value = "";
-      countGuess += 1;
-    } else if (submitNumber === randomNumber) {
-      hintbox.innerText = "Good Job ! Number was : " + randomNumber;
-      playAgainButton.style.visibility = "visible";
-    } else if (isNaN(submitNumber)) {
-      hintbox.innerText = "Vous devez entrer un nombre !";
-      document.getElementById("yourGuessInput").value = "";
-      countGuess += 1;
+    while (this.element.firstChild) {
+      this.element.firstChild.remove();
     }
-    guessCountElement.textContent = countGuess;
-    console.log(countGuess);
-  });
+  }
+
+  addAttempt(attempt, isRight) {
+    this.attempts.push(attempt);
+
+    const element = document.createElement("div");
+    element.classList.add("text-xs");
+    element.style.position = "absolute";
+
+    element.innerText = isRight ? "🟢" : "x";
+
+    const percentage = Math.min(Math.max(0, (attempt / MAX) * 100), 98);
+    element.style.left = `${percentage}%`;
+    element.style.top = "9px";
+
+    this.element.appendChild(element);
+  }
 }
 
-game();
+class Game {
+  constructor() {
+    this.targetNumber = getRandomNumber(0, MAX);
+    console.log(this.targetNumber);
+    this._attempt = 0;
+    this.attempts = new Attempts();
 
-playAgainButton?.addEventListener("click", (event) => {
-  playAgain();
-});
+    this.submitHandler = (e) => {
+      this.submitGuess(e);
+    };
+  }
+
+  get attempt() {
+    return this._attempt;
+  }
+
+  set attempt(newAttemp) {
+    this._attempt = newAttemp;
+    this.attemptElement.innerText = `Attemp(s) : ${newAttemp}`;
+  }
+
+  init() {
+    this.attempts.init();
+    this.element = document.querySelector("#game-container");
+    this.element.classList.remove("hidden");
+
+    this.guessForm = document.querySelector("#guess-form");
+    this.message = document.querySelector("#message");
+
+    this.attemptElement = document.querySelector("#attempt");
+
+    this.guessForm.addEventListener("submit", this.submitHandler);
+    this.restartButton = document.querySelector("#restart");
+  }
+
+  submitGuess(e) {
+    e.preventDefault();
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    const guess = Number(formData.get("guess"));
+
+    if (Number.isNaN(guess)) {
+      this.message.innerText =
+        "❌ Invalid guess, you need to use a valid number";
+      return;
+    }
+
+    this.attempt++;
+    form.querySelector("input").value = "";
+
+    this.attempts.addAttempt(guess, guess === this.targetNumber);
+
+    if (guess === this.targetNumber) {
+      this.message.innerText = `🟢 You've found my guess, it's ${this.targetNumber}`;
+      this.restartButton.classList.remove("hidden");
+      return;
+    }
+
+    if (guess > this.targetNumber) {
+      const isAlredyHigh = this.message.innerText.includes("high");
+      const getLastChar = Number(this.message.innerText.slice(-1)) || 1;
+      this.message.innerText = `🔴 Your guess is too high. ${
+        isAlredyHigh ? `x${getLastChar + 1}` : ""
+      }`;
+    }
+
+    if (guess < this.targetNumber) {
+      const isAlredyLow = this.message.innerText.includes("low");
+      const getLastChar = Number(this.message.innerText.slice(-1)) || 1;
+      this.message.innerText = `🔴 Your guess is too low. ${
+        isAlredyLow ? `x${getLastChar + 1}` : ""
+      }`;
+    }
+  }
+
+  destroy() {
+    this.element.classList.add("hidden");
+    this.guessForm.removeEventListener("form", this.submitHandler);
+    this.message.innerText = "";
+    this.attemptElement.innerText = "Attemp(s) : 0";
+    this.restartButton.classList.add("hidden");
+  }
+}
+
+let game = null;
+const toggleGame = () => {
+  const startContainer = document.querySelector("#start-container");
+  startContainer.classList.add("hidden");
+
+  if (game) {
+    game.destroy();
+  }
+  game = new Game();
+  game.init();
+};
+
+const startButton = document.querySelector("#start");
+startButton.addEventListener("click", toggleGame);
+
+const restartButton = document.querySelector("#restart");
+restartButton.addEventListener("click", toggleGame);
