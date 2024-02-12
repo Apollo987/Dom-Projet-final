@@ -2,6 +2,7 @@ import "./style.css";
 
 const startButton = document.querySelector("#startButton");
 const startContainer = document.querySelector("#startContainer");
+const gameContainer = document.querySelector("#gameContainer");
 const guessCountElement = document.querySelector("#guessCount");
 const playAgainButton = document.querySelector("#playAgainButton");
 const submitButton = document.querySelector("#submitButton");
@@ -26,8 +27,10 @@ function playAgain() {
 }
 
 startButton.addEventListener("click", (event) => {
-  startContainer.style.transform = `translateX(${5000}px)`;
+  startContainer.style.transform = `translateX(${3000}px)`;
   startContainer.style.transition = `transform 5s ease-out`;
+  gameContainer.style.transform = `translateX(${1500}px)`;
+  gameContainer.style.transition = `transform 4s ease-out`;
 });
 
 function drawX(wrongNumber) {
